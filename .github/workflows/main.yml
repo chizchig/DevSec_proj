@@ -1,0 +1,29 @@
+name: Multiple Deployment
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v4
+        - name: Use Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '20.x'
+        - name: Install fromtend dependencies
+          working-directory: ./app/frontend
+          run: npm run build
+        - name: Test React app
+          working-directory: ./app/frontend
+          run: npm test
