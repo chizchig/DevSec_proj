@@ -48,3 +48,25 @@ jobs:
     - name: Test React app
       working-directory: ./app/frontend
       run: CI=true npm test -- --passWithNoTests || echo "No tests found for frontend"
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{secrets.AWS_ROLE_TO_ASSUME}}
+        aws-region: us-east-1
+        role-session-name: GitHubActions-${{github.run_id}}
+        role-duration-seconds: 3600
+        audience: sts.amazonaws.com
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+  
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }} #repository_url
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}  # Change this to your ECR repository name
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
