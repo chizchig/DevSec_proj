@@ -49,6 +49,13 @@ jobs:
       working-directory: ./app/frontend
       run: CI=true npm test -- --passWithNoTests || echo "No tests found for frontend"
 
+    
+    - name: Debug GitHub Context
+      run: |
+        echo "GitHub Actor: ${{ github.actor }}"
+        echo "GitHub Repository: ${{ github.repository }}"
+        echo "GitHub Ref: ${{ github.ref }}"
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
