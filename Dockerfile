@@ -17,7 +17,7 @@ RUN npm run build
 # Stage 3: Production environment
 FROM node:20-alpine
 WORKDIR /app
-COPY --from=backend-build /app/backend ./backend
+
 COPY --from=frontend-build /app/frontend/build ./frontend/build
 WORKDIR /app/backend
 
