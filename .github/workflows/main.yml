@@ -13,6 +13,8 @@ permissions:
 jobs:
   build-and-push-to-ecr:
     runs-on: ubuntu-latest
+    env:
+      ECR_REPOSITORY: dev_sec
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -27,10 +29,15 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
+    - name: Set ECR registry and image tag
+      run: |
+        echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+        echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+
     - name: Create ECR repository
       run: |
-        aws ecr describe-repositories --repository-names dev_sec || \
-        aws ecr create-repository --repository-name dev_sec
+        aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
+        aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
       continue-on-error: true
 
     - name: Build Docker image
@@ -44,9 +51,3 @@ jobs:
         echo "Pushing image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
         docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
         echo "Image pushed: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
-
-        cd ${{ github.workspace }}
-        # Build the Docker image
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        # Push the image to ECR
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
