@@ -13,8 +13,8 @@ permissions:
 jobs:
   build-and-push-to-ecr:
     runs-on: ubuntu-latest
-    env:
-      ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+    #env:
+      #ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
