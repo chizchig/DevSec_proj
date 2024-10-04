@@ -1,18 +1,17 @@
-# BUILDING THE REACT FRONT END
-
+# Stage 1: Build the React frontend
 FROM node:20-alpine AS frontend-build
 WORKDIR /app/frontend
-COPY frontend/package*.json ./
+COPY app/frontend/package*.json ./
 RUN npm ci
-COPY frontend/ ./
+COPY app/frontend/ ./
 RUN npm run build
 
 # Stage 2: Build the Node.js backend
 FROM node:20-alpine AS backend-build
 WORKDIR /app/backend
-COPY backend/package*.json ./
+COPY app/backend/package*.json ./
 RUN npm ci
-COPY backend/ ./
+COPY app/backend/ ./
 RUN npm run build
 
 # Stage 3: Production environment
@@ -26,8 +25,8 @@ WORKDIR /app/backend
 RUN npm ci --only=production
 
 # Add a non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 -G nodejs
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001 -G nodejs
 USER nodejs
 
 EXPOSE 3000
