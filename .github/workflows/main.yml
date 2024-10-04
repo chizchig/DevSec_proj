@@ -1,4 +1,4 @@
-name: Node.js Backend and React Frontend Deployment
+name: MultiBuild Deployment
 
 on:
   push:
